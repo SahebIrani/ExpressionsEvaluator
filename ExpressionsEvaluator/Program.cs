@@ -1,4 +1,7 @@
 ﻿
+using ExpressionsEvaluator;
+using System.Collections;
+
 Console.WriteLine("\n===========================================\n");
 
 Console.WriteLine("Hello from Expressions Evaluator .. !!!!");
@@ -7,9 +10,11 @@ Console.WriteLine("\n===========================================\n");
 
 var data = "1+2*3/6";
 var data2 = "2 + 4 * 6";
+var data3 = "12abc20yz68";
 
 Console.WriteLine($"Data: \"{data}\"");
 Console.WriteLine($"Data2: \"{data2}\"");
+Console.WriteLine($"Data3: \"{data3}\"");
 
 Console.WriteLine("\n===========================================\n");
 
@@ -21,15 +26,38 @@ Console.WriteLine(
     $"{Evaluate2(data)} | " +
     $"{Evaluate3(data)} | " +
     $"{Evaluate4(data)} | " +
-    $"{Evaluate5(data2)} | " 
+    $"{Evaluate5(data2)} | "
 );
 
 Console.WriteLine("\n===========================================\n");
 
 Console.WriteLine(
-    $"Result => (26 == ({data2})):" +
+    $"Result data2 => (26 == ({data2})):" +
     $" {26 == (int)new NCalc.Expression(data2).Evaluate()}"
 );
+
+Console.WriteLine("\n===========================================\n");
+
+Console.WriteLine($"MathParser Isvalid data: {new ExpressionsEvaluator.Parser().Evaluate(data)}");
+
+Console.WriteLine("\n===========================================\n");
+
+Console.WriteLine($"FindSum data3: {FindSum(data3)}");
+
+Console.WriteLine("\n===========================================\n");
+
+try
+{
+    RPNParser parser = new();
+    ArrayList arrExpr = parser.GetPostFixNotation("4+Sinjul*8MSBH/13", typeof(long), true);
+    string szResult = parser.Convert2String(arrExpr);
+    Console.WriteLine(szResult);
+    Console.WriteLine(parser.EvaluateRPN(arrExpr, typeof(long), default).ToString());
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Exception - " + ex.Message);
+}
 
 Console.WriteLine("\n===========================================\n");
 
@@ -339,4 +367,42 @@ static double Evaluate5(string expr)
     }
 
     return Convert.ToDouble(stack.Pop());
+}
+
+static long FindSum(string str)
+{
+    // A temporary string
+    string temp = "0";
+
+    // A string length
+    int n = str.Length;
+
+    // holds sum of all numbers
+    // present in the string
+    int sum = 0;
+
+    // read each character in input string
+    for (int i = 0; i < n; i++)
+    {
+        //char ch = str.ElementAt(i);
+        char ch = str[i];
+
+        // if current character is a digit
+        if (char.IsDigit(ch)) temp += ch;
+
+        // if current character is an alphabet
+        else
+        {
+            // increment sum by number found earlier
+            // (if any)
+            sum += int.Parse(temp);
+
+            // reset temporary string to empty
+            temp = "0";
+        }
+    }
+
+    // atoi(temp.c_str()) takes care of trailing
+    // numbers
+    return sum + int.Parse(temp);
 }
